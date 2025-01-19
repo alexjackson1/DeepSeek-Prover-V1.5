@@ -12,6 +12,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   python3.10 \
   python3.10-distutils \
   python3.10-venv \
+  psmisc \
   && curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10 \
   && rm -rf /var/lib/apt/lists/*
 
@@ -38,7 +39,8 @@ RUN pip install --no-cache-dir \
   pandas==1.4.3 \
   tabulate==0.9.0 \
   termcolor==2.4.0 \
-  accelerate==0.33.0
+  accelerate==0.33.0 \
+  hf_transfer
 
 # Install Lean
 COPY --from=lean_base /root/.elan /root/.elan
