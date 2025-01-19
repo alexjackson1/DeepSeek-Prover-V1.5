@@ -1,4 +1,4 @@
-FROM dsprove-mathlib4:latest AS lean_base
+FROM ghcr.io/alexjackson1/mathlib4:deepseek AS lean_base
 FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04
 
 # Install dependencies including Python 3.10
