@@ -98,7 +98,7 @@ app.add_middleware(
 
 
 def make_prompt(request: ProveRequest) -> str:
-    comment = "\n".join([f"\\- {l}" for l in request.informal_prefix.splitlines()])
+    comment = "\n".join([f"\-- {l}" for l in request.informal_prefix.splitlines()])
     return f"{request.prompt}\n{request.header}\n{comment}\n{request.formal_statement}"
 
 
