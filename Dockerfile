@@ -28,6 +28,7 @@ RUN pip install --no-cache-dir \
   torch==2.2.1+cu118 \
   --extra-index-url https://download.pytorch.org/whl/cu118
 
+# Install flash-attn (there were issues with install without --no-build-isolation)
 RUN pip install --no-cache-dir flash-attn==2.6.3 --no-build-isolation
 
 # Install remaining dependencies
@@ -42,20 +43,18 @@ RUN pip install --no-cache-dir \
   accelerate==0.33.0 \
   hf_transfer
 
+# NOTE: It seems that you cannot elevate privileges in hugging face spaces
 USER ubuntu
 
 WORKDIR /workspace
 
-# Install Lean
-COPY --from=lean_base --chown=ubuntu:ubuntu /root/.elan /ubuntu/.elan
-COPY --from=lean_base --chown=ubuntu:ubuntu /mathlib4 /mathlib4
+# Install Lean from the pre-built binary
+COPY --from=lean_base --chown=ubuntu:ubuntu /root/.elan /home/ubuntu/.elan
 
-# Add DeepSeek Prover scaffold
+# Copy DeepSeek scaffold
 COPY --chown=ubuntu=ubuntu . /workspace
 
-# Create symlinks to make Lean available in the workspace
-RUN ln -s /mathlib4 /workspace/mathlib4
-
-WORKDIR /workspace
+# Copy Mathlib4 into workspace
+COPY --from=lean_base --chown=ubuntu:ubuntu /mathlib4 /workspace/mathlib4
 
 CMD ["python", "quick_start.py"]
