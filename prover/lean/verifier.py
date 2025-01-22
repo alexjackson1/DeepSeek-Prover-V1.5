@@ -5,12 +5,10 @@ import ctypes
 import resource
 import tempfile
 import traceback
-import threading
 import subprocess
 import multiprocessing as mp
 from pprint import pprint
-
-import numpy as np
+from typing import Any, Dict, List, TypedDict
 
 from prover.lean.ast_parser import lean4_parser
 from prover.workers import ProcessScheduler
@@ -22,7 +20,40 @@ DEFAULT_LAKE_PATH = f'{HOME_DIR}/.elan/bin/lake'
 DEFAULT_LEAN_WORKSPACE = 'mathlib4/'
 
 
-def verify_lean4_file(code, lake_path=DEFAULT_LAKE_PATH, lean_workspace=DEFAULT_LEAN_WORKSPACE, last_env=None, verbose=False, timeout=300, allTactics=False, ast=False, premises=False, tactics=False):
+class ParseResult(TypedDict):
+    success: bool
+    sorries: list
+    tactics: list
+    errors: list
+    warnings: list
+    infos: list
+    system_messages: str
+    system_errors: str
+    # NOTE: see `ast_parser.py`
+    ast: Dict[str, List[Any]]
+    verified_code: str
+    complete: bool
+    verify_time: float
+
+class ParseFailure(TypedDict):
+    success: bool
+    complete: bool
+    system_errors: str
+    system_messages: str
+    verify_time: float
+
+def verify_lean4_file(
+    code,
+    lake_path=DEFAULT_LAKE_PATH,
+    lean_workspace=DEFAULT_LEAN_WORKSPACE,
+    last_env=None,
+    verbose=False,
+    timeout=300,
+    allTactics=False,
+    ast=False,
+    premises=False,
+    tactics=False
+) -> ParseResult | ParseFailure:
     command = dict(cmd=code, allTactics=allTactics, ast=ast, tactics=tactics, premises=premises)
     if last_env is not None:
         command.update(env=last_env)
@@ -49,8 +80,8 @@ def verify_lean4_file(code, lake_path=DEFAULT_LAKE_PATH, lean_workspace=DEFAULT_
             "ast" : ast_results,
             "verified_code" : code,
         }
-        result['pass'] = not result['errors']
-        result['complete'] = result['pass'] and not result['sorries'] and not any("declaration uses 'sorry'" in warning['data'] or 'failed' in warning['data'] for warning in result['warnings'])
+        result['success'] = not result['errors']
+        result['complete'] = result['success'] and not result['sorries'] and not any("declaration uses 'sorry'" in warning['data'] or 'failed' in warning['data'] for warning in result['warnings'])
     except:
         result = {
             "pass": False,

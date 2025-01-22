@@ -164,7 +164,7 @@ class RMaxTS(SamplingAlgorithmBase):
         # compile the root node with `sorry`
         self.proof_summarizer = ProofSummarizer(data=data, scheduler=self.scheduler)
         root_sorry = self.proof_summarizer.analyze('  sorry', require_verification=True)
-        assert root_sorry.result['pass'], "Cannot parse a `sorry` tactic on root."
+        assert root_sorry.result['success'], "Cannot parse a `sorry` tactic on root."
         self.root_goal = root_sorry.result['sorries'][-1]['goal']
 
         # other initialization
