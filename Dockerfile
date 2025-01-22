@@ -40,9 +40,6 @@ RUN pip install --no-cache-dir \
   tabulate==0.9.0 \
   termcolor==2.4.0 \
   accelerate==0.33.0 \
-  fastapi==0.115.6 \
-  pydantic==2.10.5 \
-  uvicorn==0.34.0 \
   hf_transfer
 
 # Install Lean
@@ -57,4 +54,4 @@ RUN ln -s /mathlib4 /workspace/mathlib4
 
 WORKDIR /workspace
 
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "quick_start.py"]
