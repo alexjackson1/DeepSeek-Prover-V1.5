@@ -42,12 +42,16 @@ RUN pip install --no-cache-dir \
   accelerate==0.33.0 \
   hf_transfer
 
+USER ubuntu
+
+WORKDIR /workspace
+
 # Install Lean
-COPY --from=lean_base /root/.elan /root/.elan
-COPY --from=lean_base /mathlib4 /mathlib4
+COPY --from=lean_base --chown=ubuntu:ubuntu /root/.elan /ubuntu/.elan
+COPY --from=lean_base --chown=ubuntu:ubuntu /mathlib4 /mathlib4
 
 # Add DeepSeek Prover scaffold
-COPY . /workspace
+COPY --chown=ubuntu=ubuntu . /workspace
 
 # Create symlinks to make Lean available in the workspace
 RUN ln -s /mathlib4 /workspace/mathlib4
